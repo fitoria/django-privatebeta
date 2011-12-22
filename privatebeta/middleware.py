@@ -7,20 +7,20 @@ class PrivateBetaMiddleware(object):
     those in the account application require that a user be logged in.
     This can be a quick and easy way to restrict views on your site,
     particularly if you remove the ability to create accounts.
-    
+
     **Settings:**
-    
+
     ``PRIVATEBETA_ENABLE_BETA``
-        Whether or not the beta middleware should be used. If set to `False` 
-        the PrivateBetaMiddleware middleware will be ignored and the request 
-        will be returned. This is useful if you want to disable privatebeta 
+        Whether or not the beta middleware should be used. If set to `False`
+        the PrivateBetaMiddleware middleware will be ignored and the request
+        will be returned. This is useful if you want to disable privatebeta
         on a development machine. Default is `True`.
-    
+
     ``PRIVATEBETA_NEVER_ALLOW_VIEWS``
         A list of full view names that should *never* be displayed.  This
         list is checked before the others so that this middleware exhibits
         deny then allow behavior.
-    
+
     ``PRIVATEBETA_ALWAYS_ALLOW_VIEWS``
         A list of full view names that should always pass through.
 
@@ -29,7 +29,7 @@ class PrivateBetaMiddleware(object):
         views in ``django.contrib.auth.views``, ``django.views.static``
         and ``privatebeta.views`` will pass through unless they are
         explicitly prohibited in ``PRIVATEBETA_NEVER_ALLOW_VIEWS``
-    
+
     ``PRIVATEBETA_REDIRECT_URL``
         The URL to redirect to.  Can be relative or absolute.
     """
@@ -42,7 +42,7 @@ class PrivateBetaMiddleware(object):
         self.redirect_url = getattr(settings, 'PRIVATEBETA_REDIRECT_URL', '/invite/')
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        if request.user.is_authenticated() or not self.enable_beta:
+        if request.user.is_authenticated() or not self.enable_beta or request.get('invite_code', None):
             # User is logged in, no need to check anything else.
             return
         whitelisted_modules = ['django.contrib.auth.views', 'django.views.static', 'privatebeta.views']
